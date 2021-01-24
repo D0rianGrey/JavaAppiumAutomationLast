@@ -1,14 +1,16 @@
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
 
@@ -36,24 +38,45 @@ public class FirstTest {
 
     @Test
     public void firstTest() throws InterruptedException {
-        WebElement element1 = driver.findElementByXPath("//android.widget.HorizontalScrollView[@content-desc=\"Page 1 of 4\"]/android.widget.LinearLayout/android.widget.LinearLayout[4]");
-        element1.click();
-        WebElement element2 = driver.findElementByClassName("android.widget.Button");
-        element2.click();
-        WebElement element3 = driver.findElementByClassName("androidx.cardview.widget.CardView");
-        Thread.sleep(3000);
-        element3.click();
-        Thread.sleep(10000);
-        WebElement element4 = driver.findElementByXPath("//*[contains(@text,'Search Wikipedia')]");
-        element4.sendKeys("google");
-        Thread.sleep(3000);
-        WebElement element5 = driver.findElementByXPath("//*[contains(@text,'American technology company')]");
+        WebElement fourthDot = waitForElementPresentByXpath("//android.widget.HorizontalScrollView//android.widget.LinearLayout[4]", "Cannot find fourthDot");
+        fourthDot.click();
+
+        WebElement getStartedButton = waitForElementPresentByResourceId("android.widget.Button", "Cannot find getStartedButton");
+        getStartedButton.click();
+
+        WebElement searchInputField = waitForElementPresentByResourceId("androidx.cardview.widget.CardView", "Cannot find searchInputField");
+        searchInputField.click();
+
+        WebElement openedSearchInputField = waitForElementPresentByXpath("//*[contains(@text,'Search Wikipedia')]", "Cannot find search input");
+        openedSearchInputField.sendKeys("google");
+
+        //WebElement firstFoundItem = waitForElementPresentByXpath("//org.wikipedia:id/search_results_list//android.view.ViewGroup[0]", "Cannot find search input", 10);
+
+        WebElement element5 = waitForElementPresentByXpath("//*[contains(@text,'American technology company')]", "Cannot find search input");
         element5.click();
-        //element3.sendKeys("google");
-//        TouchAction touchAction = new TouchAction(driver);
-//        touchAction.tap(2000,0).perform();
-
-
-        //System.out.println("First test run");
+        //firstFoundItem.click();
     }
+
+    private WebElement waitForElementPresentByXpath(String xpath, String errorMessage, long timeoutInSecond) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSecond);
+        wait.withMessage(errorMessage + "\n");
+        By by = By.xpath(xpath);
+        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
+    }
+
+    private WebElement waitForElementPresentByXpath(String xpath, String errorMessage) {
+        return waitForElementPresentByXpath(xpath, errorMessage, 5);
+    }
+
+    private WebElement waitForElementPresentByResourceId(String resourceId, String errorMessage, long timeoutInSecond) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSecond);
+        wait.withMessage(errorMessage + "\n");
+        By by = By.className(resourceId);
+        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
+    }
+
+    private WebElement waitForElementPresentByResourceId(String resourceId, String errorMessage) {
+        return waitForElementPresentByResourceId(resourceId, errorMessage, 5);
+    }
+
 }
